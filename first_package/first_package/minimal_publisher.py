@@ -1,14 +1,14 @@
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import String
+from std_msgs.msg import Int64
 
 
 class MinimalPublisher(Node):
     def __init__(self, node_name):
         super().__init__(node_name)
-        self._publisher = self.create_publisher(String, 'leia', 10)
-        self._msg = String()
-        self._msg.data = 'Help me Obi-Wan Kenobi, you are my only hope.'
+        self._publisher = self.create_publisher(Int64, 'leia', 10)
+        self._msg = Int64()
+        self._msg.data = 43
         self._publisher.publish(self._msg)
         self.get_logger().info(f'Publishing: {self._msg.data}')
 

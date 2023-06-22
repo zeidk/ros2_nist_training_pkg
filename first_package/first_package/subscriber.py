@@ -13,6 +13,8 @@ class SubscriberNode(Node):
 
     def __init__(self, node_name):
         super().__init__(node_name)
+        self._leia_message = ''
+        self._flag = False
         self._subscriber = self.create_subscription(String, 'leia', self.subscriber_callback, 10)
 
     def subscriber_callback(self, msg):
@@ -22,7 +24,10 @@ class SubscriberNode(Node):
             msg -- String message from the chatter663 topic.
         '''
 
+        # if not self._flag:
         self.get_logger().info(f'Receiving: {msg.data}')
+        self._leia_message = msg.data
+            # self._flag = True
 
 
 def main(args=None):

@@ -1,6 +1,8 @@
+import os 
+import glob
 from setuptools import setup
 
-package_name = 'first_package_py'
+package_name = 'first_package'
 
 setup(
     name=package_name,
@@ -10,6 +12,8 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        (os.path.join('share', package_name), glob.glob('launch/*.launch.py')),
+        
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -20,7 +24,10 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'simple_node_exe = first_package_py.simple_node:main'
+            'simple_node_exe = first_package.simple_node:main',
+            'minimal_publisher_exe = first_package.minimal_publisher:main',
+            'advanced_publisher_exe = first_package.advanced_publisher:main',
+            'subscriber_exe = first_package.subscriber:main'
         ],
     },
 )
