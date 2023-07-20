@@ -1,8 +1,9 @@
-import os 
+import os
 import glob
+
 from setuptools import setup
 
-package_name = 'first_package'
+package_name = 'parameter_demo'
 
 setup(
     name=package_name,
@@ -12,8 +13,10 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        # install launch files
         (os.path.join('share', package_name), glob.glob('launch/*.launch.py')),
-        
+        # install parameter files
+        (os.path.join('share', package_name, 'config'), glob.glob('config/*.yaml')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -24,10 +27,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'simple_node_exe = first_package.simple_node:main',
-            'minimal_publisher_exe = first_package.minimal_publisher:main',
-            'advanced_publisher_exe = first_package.advanced_publisher:main',
-            'subscriber_exe = first_package.subscriber:main'
+            'parameter_demo_exe = parameter_demo.parameter_demo_interface:main'
         ],
     },
 )
