@@ -1,46 +1,20 @@
-from datetime import datetime
-import random
-import rclpy
-from rclpy.node import Node
-from builtin_interfaces.msg import Time
-from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
+
 from rclpy.executors import MultiThreadedExecutor
-from nist_msgs.msg import WeatherStation
+
 from nist_msgs.srv import AddTwoInts
+from rclpy.node import Node
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
+import random
+from nist_msgs.msg import WeatherStation
+import rclpy
 
-
-class Weather(Node):
-    '''
-    Class to publish weather information
-    '''
-
-    def __init__(self, node_name):
-        super().__init__(node_name)
-        self._forecast_pub = self.create_publisher(
-            WeatherStation, 'weather', 100)
-        self._pub_timer = self.create_timer(1, self._pub_timer_cb)
-        self._current_day = datetime.now().weekday()
-
-    def _pub_timer_cb(self):
-        msg = WeatherStation()
-        msg.weather = WeatherStation.SNOWY
-        msg.day = self._current_day
-        time_msg = Time()
-        time_msg.sec = self.get_clock().now().seconds_nanoseconds()[0]
-        time_msg.nanosec = self.get_clock().now().seconds_nanoseconds()[1]
-        msg.time = time_msg
-
-        self.get_logger().info(f'Publishing: {msg}')
-        self._forecast_pub.publish(msg)
-
-
-class ServiceClientCallFromTimer(Node):
+class ServiceCallFromTimerDemo(Node):
     '''
     Class to call the add_two_ints service in the callback function of a timer
     '''
 
     def __init__(self, node_name):
-        super().__init__(node_name)
+        super().__init__(node_name) # type: ignore
 
         # This attribute is set in the subscriber callback function
         # and is used in the timer callback function to determine whether to call the service or not
@@ -156,13 +130,13 @@ class ServiceClientCallFromTimer(Node):
         self.get_logger().info(f'TimerSyncResult: {response.sum}')
 
 
-class ServiceClientCallFromSubscriber(Node):
+class ServiceCallFromSubscriberDemo(Node):
     '''
     Class to call the add_two_ints service in the callback function of a subscriber
     '''
 
     def __init__(self, node_name):
-        super().__init__(node_name)
+        super().__init__(node_name) # type: ignore
 
         # Create various callback groups to ensure that various events are called in a mutually exclusive manner
         client_cb_group = MutuallyExclusiveCallbackGroup()
@@ -256,16 +230,16 @@ class ServiceClientCallFromSubscriber(Node):
         self.get_logger().info(f'SubSyncResult: {response.sum}')
 
 
-class AddTwoIntsService(Node):
+class AddTwoIntsServiceDemo(Node):
     """
     Class to create a service to add two integers
     """
 
     def __init__(self, node_name):
-        super().__init__(node_name)
+        super().__init__(node_name) # type: ignore
         self.srv = self.create_service(
             AddTwoInts, 'add_two_ints', self.add_two_ints_cb)
-        
+
         self.get_logger().info('Service created, waiting for requests...')
 
     def add_two_ints_cb(self, request, response):
@@ -277,20 +251,18 @@ class AddTwoIntsService(Node):
             f'Incoming request\na: {request.a} b: {request.b}')
 
         return response
-
-
-def main(args=None):
+    
+    
+def clients_main(args=None):
     """
     Main function to create the nodes and spin the nodes
     """
     rclpy.init(args=args)
 
-    weather_node = Weather('weather_forecast')
-    timer_node = ServiceClientCallFromTimer('client_timer_py')
-    sub_node = ServiceClientCallFromSubscriber('client_sub_py')
+    timer_node = ServiceCallFromTimerDemo('client_timer_demo')
+    sub_node = ServiceCallFromSubscriberDemo('client_sub_demo')
 
     executor = MultiThreadedExecutor()
-    executor.add_node(weather_node)
     executor.add_node(timer_node)
     executor.add_node(sub_node)
     try:
@@ -298,7 +270,6 @@ def main(args=None):
     except KeyboardInterrupt:
         timer_node.get_logger().info('KeyboardInterrupt, shutting down.\n')
 
-    weather_node.destroy_node()
     timer_node.destroy_node()
     sub_node.destroy_node()
     rclpy.shutdown()
@@ -310,7 +281,7 @@ def server_main(args=None):
     """
     rclpy.init(args=args)
 
-    server_node = AddTwoIntsService('minimal_service')
+    server_node = AddTwoIntsServiceDemo('server_demo')
     try:
         rclpy.spin(server_node)
     except KeyboardInterrupt:

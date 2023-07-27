@@ -20,8 +20,10 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'interface_demo_exe = interface_demo.interface_demo:main',
-            'server_exe = interface_demo.interface_demo:server_main',
+            'weather_demo_exe = interface_demo.weather_interface:main',
+            'clients_demo_exe = interface_demo.client_server_interface:clients_main',
+            'server_demo_exe = interface_demo.client_server_interface:server_main',
+            'callback_group_demo_exe = interface_demo.callback_group_interface:main',
         ],
     },
 )
